@@ -1,0 +1,15 @@
+iron-list {
+	width: 60vw;
+	height: 50vh;
+}
+
+paper-card {
+	width: 100vw;
+	background: teal;
+	elevation: 3;
+}
+
+iron-list div{
+	padding: 5px;
+}
+

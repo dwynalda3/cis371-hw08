@@ -1,0 +1,15 @@
+<script src="../../node_modules/redux/dist/redux.js"></script>
+	<script>
+		const initialState = {counter: 0};
+		const myReducer = (state = initialState, action) => {
+			switch (action.type) {
+				case "selected": 
+					return Object.assign({}, state, {selectedItem: action.payload});
+				case "unselected": 
+					return Object.assign({}, state, {selectedItem: null});
+				default: return state;          /* required !!! */
+			}
+		};
+		const store = Redux.createStore(myReducer);
+		ReduxMixin = PolymerRedux(store);    // ReduxMixin has a GLOBAL scope   
+	</script>

@@ -1,0 +1,168 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app-script.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/polymer-redux/polymer-redux.html">
+<link rel="import" href="redux-mixin.html">
+<dom-module id="my-main">
+  <template>
+     <style id="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      :host {
+        display: block;
+      }
+	  iron-list {
+		width: 60vw;
+		height: 50vh;
+	}
+	paper-card {
+		width: 100vw;
+		background: cyan;
+		elevation: 3;
+	}
+
+	iron-list div{
+		padding: 5px;
+	}
+	
+	#selectedCard paper-card{
+		width: 35vw;
+		background: red;
+	}
+    </style>
+	<firebase-app id="firebaseApp"
+		auth-domain="homework5-48fe3.firebaseapp.com"
+		database-url="https://homework5-48fe3.firebaseio.com"
+		api-key="AIzaSyDyOzJoTTpddTQWzr4j-FVXvqLxQJzwXjQ"
+		storage-bucket="homework5-48fe3.appspot.com"
+		messaging-sender-id="401542426153">
+	</firebase-app>
+
+	<firebase-query path="/friend" data="{{qryData}}"></firebase-query>
+	
+    <h2>Hello [[prop1]]!</h2>
+	<paper-button raised id="diaBtn" on-click="addFriend">Add New</paper-button>
+	<table>
+	<tr>
+	<td>
+	<iron-collapse id="collapse">
+	<iron-list id="list" items="[[qryData]]" as="item" selected-item="{{selectedItem}}" selection-enabled>
+		<template id="myList">
+			<div class="layout horizontal wrap">
+				<paper-card heading="[[item.name]]">
+					<div class="layout vertical-align">
+						<div class="style-scope lay-out">Age: [[item.age]] </div>
+						<div class="style-scope lay-out">Phone: [[item.phone]]</div>
+					</div>	
+					
+					<div class="card-actions">			
+						<div class="layout horizontal end-justified style-scope lay-out">
+							<div class="style-scope lay-out">Name: [[item.name]] |</div>
+							<div class="style-scope lay-out">Age: [[item.age]] |</div>
+							<div class="style-scope lay-out">Phone: [[item.phone]]</div>
+							<div class="style-scope lay-out"><iron-icon on-click="deleteMe" icon="icons:delete"></iron-icon></div>
+						</div>
+					</div>					
+				</paper-card>
+			</div>
+			</template>
+	</iron-list>
+	</iron-collapse>
+	<paper-button raised on-click="toggle" id="button">Show/Hide List</button>
+	</td>
+	<td>
+	<div id="selectedCard" style="display:none">
+	<paper-card heading="[[selectedItem.name]]">
+		<div class="style-scope lay-out">Age: [[selectedItem.age]] </div>
+		<div class="style-scope lay-out">Phone: [[selectedItem.phone]]</div>
+	</paper-card>
+	</div>
+	</td>
+	</tr>
+	</table>
+	<paper-dialog id="newFriend" on-iron-overlay-closed="diaClosed">
+		<paper-dialog-scrollable>
+		<paper-input id="nameInput" label="Name"></paper-input>
+		<paper-input id="ageInput" label="Age"></paper-input>
+		<paper-input id="phoneInput" label="Phone"></paper-input>
+		<div class="buttons">
+			<paper-button dialog-dismiss>Cancel</paper-button>
+			<paper-button dialog-confirm>Add</paper-button>
+		</div>
+		</paper-dialog-scrollable>
+    </paper-dialog>
+  </template>
+
+  <script>
+	/**
+     * @customElement
+     * @polymer
+     */
+    class MyMain extends ReduxMixin(Polymer.Element) {
+		constructor() {
+			super();
+		}
+		static get is() { return 'my-main'; }
+		static get properties() {
+			return {
+				prop1: {
+					type: String,
+					value: 'my-main'
+				},
+				selectedItem: {
+					type: Object,
+					observer: "_userUpdated"
+				},
+				item: {
+					type: Object
+				}
+			};
+		}
+		addFriend() {
+			this.$.newFriend.open();
+		}
+		
+		deleteMe(ev) {
+			const dbRef = this.$.firebaseApp.app.database();
+			const key = ev.model.item.$key;
+			dbRef.ref('/friend/'+key).set(null);
+			alert("Deleted: " + ev.model.item.name);
+		}
+	  
+		diaClosed() {
+			if (this.$.newFriend.closingReason.confirmed) {
+				const dbRef = this.$.firebaseApp.app.database();
+				alert ("You enter " + this.$.nameInput.value);
+				dbRef.ref('/friend').push().set({ name : this.$.nameInput.value,
+				age: this.$.ageInput.value,
+				phone: this.$.phoneInput.value });
+			}
+		}
+		toggle() {
+			this.$.collapse.toggle();
+		}
+		_userUpdated(){
+			if (this.selectedItem == null) {
+                    this.dispatch({type: "unselected"});
+					selectedCard.style="display:none";
+                } else {
+					this.item = this.$.list.selectedItem;
+					this.dispatch({type: "selected", payload: this.item });
+					selectedCard.style="display:true";
+                }
+		}
+	}
+
+    window.customElements.define(MyMain.is, MyMain);
+  </script>
+</dom-module>

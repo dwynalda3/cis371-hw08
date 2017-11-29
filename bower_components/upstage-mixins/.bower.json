@@ -1,0 +1,18 @@
+{
+  "name": "upstage-mixins",
+  "main": "mixins.less",
+  "ignore": [
+    "*.sublime-*"
+  ],
+  "homepage": "https://github.com/upstage/mixins",
+  "_release": "b0f4c5bb9d",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "b0f4c5bb9d5fa6936d7d947c46f84d93e7cb77e3"
+  },
+  "_source": "https://github.com/upstage/mixins.git",
+  "_target": "*",
+  "_originalSource": "mixins",
+  "_direct": true
+}

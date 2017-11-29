@@ -1,0 +1,26 @@
+{
+  "name": "property-accessors",
+  "description": "Nice Object.defineProperty",
+  "main": "build/property-accessors.js",
+  "authors": [
+    "Yaroslav Konoplov <eahome00@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "javascript",
+    "object",
+    "define",
+    "property"
+  ],
+  "homepage": "https://github.com/yivo/property-accessors",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "lodash": "4.x"
+  }
+}
